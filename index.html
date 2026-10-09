@@ -1,0 +1,676 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Para Naty: ❤️</title>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Quicksand:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+  
+  <style>
+    :root {
+      --bg-gradient: linear-gradient(135deg, #ffe5ec, #ffc2d1, #f0e6ff);
+      --primary: #ff477e;
+      --secondary: #9b5de5;
+      --dark: #2b2d42;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Quicksand', sans-serif;
+      background: var(--bg-gradient);
+      min-height: 100vh;
+      color: var(--dark);
+      overflow-x: hidden;
+      padding-bottom: 40px;
+    }
+
+    h1, h2, h3 {
+      font-family: 'Fredoka One', cursive;
+    }
+
+    .hearts {
+      position: fixed;
+      width: 100%;
+      height: 100%;
+      top: 0;
+      left: 0;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .heart-particle {
+      position: absolute;
+      color: rgba(255, 71, 126, 0.3);
+      animation: floatUp 6s infinite linear;
+      font-size: 20px;
+    }
+
+    @keyframes floatUp {
+      0% { transform: translateY(100vh) rotate(0deg); opacity: 1; }
+      100% { transform: translateY(-10vh) rotate(360deg); opacity: 0; }
+    }
+
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 20px;
+      position: relative;
+      z-index: 1;
+      text-align: center;
+    }
+
+    header {
+      margin-top: 20px;
+      margin-bottom: 25px;
+    }
+
+    header h1 {
+      color: var(--primary);
+      font-size: 2.3rem;
+      text-shadow: 2px 2px 0px #fff;
+      margin-bottom: 6px;
+    }
+
+    .counter-box {
+      background: rgba(255, 255, 255, 0.9);
+      border: 3px dashed var(--primary);
+      border-radius: 20px;
+      padding: 15px;
+      font-size: 1.15rem;
+      font-weight: bold;
+      color: var(--primary);
+      margin-bottom: 30px;
+      display: inline-block;
+      width: 100%;
+      box-shadow: 0 4px 15px rgba(255, 71, 126, 0.15);
+    }
+
+    .lobby {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 20px;
+      margin-bottom: 40px;
+    }
+
+    .door {
+      background: #fff;
+      border: 4px solid var(--primary);
+      border-radius: 25px;
+      padding: 25px 15px;
+      cursor: pointer;
+      position: relative;
+      box-shadow: 0 10px 0px var(--primary);
+      transition: all 0.2s ease;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .door:active {
+      transform: translateY(6px);
+      box-shadow: 0 4px 0px var(--primary);
+    }
+
+    .door-num {
+      position: absolute;
+      top: -12px;
+      background: var(--secondary);
+      color: white;
+      font-family: 'Fredoka One', cursive;
+      padding: 4px 12px;
+      border-radius: 12px;
+      font-size: 0.9rem;
+      border: 2px solid white;
+    }
+
+    .door i {
+      font-size: 2.4rem;
+      color: var(--primary);
+      margin-bottom: 10px;
+    }
+
+    .door span {
+      font-family: 'Fredoka One', cursive;
+      font-size: 1.05rem;
+      color: var(--dark);
+    }
+
+    .modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 100;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 15px;
+    }
+
+    .modal-content {
+      background: white;
+      width: 100%;
+      max-width: 520px;
+      max-height: 88vh;
+      border-radius: 30px;
+      border: 5px solid var(--primary);
+      padding: 25px;
+      box-shadow: 0 15px 30px rgba(0,0,0,0.2);
+      position: relative;
+      overflow-y: auto;
+      text-align: center;
+      animation: zoomIn 0.25s ease forwards;
+    }
+
+    @keyframes zoomIn {
+      from { transform: scale(0.85); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+
+    .close-btn {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      font-size: 1.6rem;
+      cursor: pointer;
+      color: #aaa;
+    }
+
+    .close-btn:hover { color: var(--primary); }
+
+    /* Puerta 1 */
+    .audio-player {
+      background: #f7f1fc;
+      padding: 12px;
+      border-radius: 15px;
+      margin: 15px 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+    }
+
+    .music-btn {
+      background: var(--primary);
+      border: none;
+      color: white;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Puerta 2 */
+    .coupons {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .coupon {
+      border: 3px dashed var(--secondary);
+      border-radius: 15px;
+      padding: 14px;
+      background: #faf5ff;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      text-align: left;
+    }
+
+    .coupon-desc h4 { color: var(--secondary); font-family: 'Fredoka One', cursive; margin-bottom: 2px; }
+
+    .claim-btn {
+      background: var(--secondary);
+      border: none;
+      color: white;
+      padding: 8px 14px;
+      border-radius: 10px;
+      font-weight: bold;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    /* Puerta 3 */
+    .calc-btn {
+      background: var(--primary);
+      border: none;
+      color: white;
+      padding: 12px 25px;
+      border-radius: 20px;
+      font-family: 'Fredoka One', cursive;
+      font-size: 1.1rem;
+      cursor: pointer;
+      margin-top: 15px;
+    }
+
+    .calc-result {
+      font-size: 1.25rem;
+      font-family: 'Fredoka One', cursive;
+      color: var(--primary);
+      margin-top: 20px;
+      min-height: 70px;
+      transition: opacity 0.3s ease;
+      line-height: 1.5;
+    }
+
+    /* Puerta 4 */
+    .wheel-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .roulette-box {
+      width: 210px;
+      height: 210px;
+      border-radius: 50%;
+      border: 6px solid var(--secondary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Fredoka One', cursive;
+      font-size: 1.1rem;
+      background: #f0e6ff;
+      padding: 20px;
+      text-align: center;
+      transition: transform 1.2s cubic-bezier(0.25, 0.1, 0.25, 1);
+    }
+
+    /* Puerta 5 */
+    .polaroid {
+      background: white;
+      padding: 12px 12px 25px;
+      border: 1px solid #ddd;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.12);
+      transform: rotate(-3deg);
+      max-width: 260px;
+      margin: 15px auto;
+    }
+
+    .polaroid img {
+      width: 100%;
+      height: 180px;
+      object-fit: cover;
+      border-radius: 4px;
+    }
+
+    .polaroid p {
+      margin-top: 10px;
+      font-family: 'Fredoka One', cursive;
+      font-size: 0.95rem;
+    }
+
+    /* Puerta 6 */
+    .checklist {
+      text-align: left;
+      max-height: 380px;
+      overflow-y: auto;
+      padding-right: 8px;
+    }
+
+    .task-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 9px 0;
+      border-bottom: 1px solid #f0f0f0;
+    }
+
+    .task-item input[type="checkbox"] {
+      width: 20px;
+      height: 20px;
+      accent-color: var(--primary);
+      cursor: pointer;
+    }
+
+    .task-item label {
+      font-size: 0.95rem;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .task-item.checked label {
+      text-decoration: line-through;
+      color: #a0a0a0;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="hearts" id="hearts-bg"></div>
+
+  <div class="container">
+    <header>
+      <h1>Felices 6 meses :3</h1>
+      <p style="font-size: 1.15rem; font-weight: bold; color: var(--secondary)">Emi x Naty 😎</p>
+    </header>
+
+    <div class="counter-box" id="time-counter">
+      Calculando nuestro tiempo juntos...
+    </div>
+
+    <div class="lobby">
+      <div class="door" onclick="openModal('modal1')">
+        <div class="door-num">P1</div>
+        <i class="fa-solid fa-envelope"></i>
+        <span>Cartita :p 💌</span>
+      </div>
+      <div class="door" onclick="openModal('modal2')">
+        <div class="door-num">P2</div>
+        <i class="fa-solid fa-ticket"></i>
+        <span>Cupones 🎟️</span>
+      </div>
+      <div class="door" onclick="openModal('modal3')">
+        <div class="door-num">P3</div>
+        <i class="fa-solid fa-heart-pulse"></i>
+        <span>Calculadora de amor 💖</span>
+      </div>
+      <div class="door" onclick="openModal('modal4')">
+        <div class="door-num">P4</div>
+        <i class="fa-solid fa-ferry"></i>
+        <span>Planes 🎡</span>
+      </div>
+      <div class="door" onclick="openModal('modal5')">
+        <div class="door-num">P5</div>
+        <i class="fa-solid fa-camera-retro"></i>
+        <span>Momentos 📸</span>
+      </div>
+      <div class="door" onclick="openModal('modal6')">
+        <div class="door-num">P6</div>
+        <i class="fa-solid fa-list-check"></i>
+        <span>planes emi x naty 😎</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- P1: Carta con música -->
+  <div class="modal" id="modal1">
+    <div class="modal-content">
+      <span class="close-btn" onclick="closeModal('modal1')">&times;</span>
+      <h3 style="color: var(--primary); margin-bottom: 15px;">Para Naty 💌</h3>
+      
+      <div class="audio-player">
+        <button class="music-btn" onclick="togglePlay()"><i id="play-icon" class="fa-solid fa-play"></i></button>
+        <span style="font-weight: bold; font-size: 0.95rem;">Nuestra canción favorita 🎵</span>
+        <audio id="bg-music" loop src="cancion.mp3"></audio>
+      </div>
+
+      <p style="text-align: left; line-height: 1.6; font-size: 1.05rem;">
+        Felices 6 meses, mi amor, te adoro demasiado 💖 🌟<br><br>
+        holi amorcito, te amo mucho, si estás leyendo esto es porque ya llegaste a tu hogar o eso espero xd, sabes que te amo muchísimo, ahorita estoy acabando lo que había hecho en la semana jeje para nuestro aniversario, primero que nada quiero decirte que muchísimas gracias por estos 6 meses juntos, han sido los mejores de mi vida, no sabes cuánto valoro estar a tu lado, es vernos tenerte de novia y ser muy felices juntos, sabes que estoy muy enamorado de ti , de aquí hasta el infinito, mi amor por ti es igual de inmenso que mustafa 🐈, la song de hoy es “I Just Can’t Stop Loving You” de tu artista favorito, michael jackson, tenía muchas canciones en mente, pero me decidí por esta porque justo estamos escuchando a michael en el meet jeje, y me di mi tiempo de escucharla para saber de qué hablaba, y me siento muy identificado, simplemente no puedo dejar de amarte, es algo que siempre hablamos, que jamás nos dejemos y de mi parte no podría dejar de amarte de la forma en que nos amamos hoy, una forma tan linda y hermosa, eres todo para mí, nuestro amor amanece todas las mañanas, multiplicándose cada vez más, el cielo se alegra de verte al despertar, como un día yo lo haré cuando vivamos juntos :3, estoy muy orgulloso de decirte que te amo y que no se que haría sin ti, no veo caso de vivir si no es a tu lado, naty, te amo y te quiero mucho, jamás podría dejar de hacerte reír, de escuchar tu voz en las mañanas cada vez que vamos a la escuela, me alegra automáticamente el día solo de escucharte, siempre pienso que es la única razón por la que hago el esfuerzo de pararme temprano, escucharte cada mañana, eres un sueño hecho realidad, ¿serás un ángel? eres tan hermosa como uno, e incluso más, todos los días me fascinas con tu belleza y seguiré siendo tu novio muchísimo tiempo más, hasta que me convierta en tu esposo claro, y le mostraremos esto a nuestros hijos, y tú serás mi novia siempre, hasta que te de el anillo y algún día formaremos una familia, no puedo esperar el día cuando le cuente a todos los jóvenes como nos valía keso y siempre éramos tan cariñosos, siempre hablaré de ti igual de enamorado que cuando te conocí, me tienes muy flechado, siempre tuyo, y te quiere, - emi<br><br>
+        Con todo mi amor,<br>
+        <strong>Emi</strong> ❤️
+      </p>
+    </div>
+  </div>
+
+  <!-- P2: Cupones -->
+  <div class="modal" id="modal2">
+    <div class="modal-content">
+      <span class="close-btn" onclick="closeModal('modal2')">&times;</span>
+      <h3 style="color: var(--secondary); margin-bottom: 20px;">Cupones 🎟️</h3>
+      <div class="coupons">
+        <div class="coupon">
+          <div class="coupon-desc">
+            <h4>Hacerte una tarea 📝</h4>
+            <p style="font-size:0.85rem">Me encargare de ayudarte en lo que sea que necesites :3</p>
+          </div>
+          <button class="claim-btn" onclick="claimCoupon('Hacerte la Tarea Pesada')">Canjear</button>
+        </div>
+        <div class="coupon">
+          <div class="coupon-desc">
+            <h4>Preparar un postre de tu  eleccion 🥞</h4>
+            <p style="font-size:0.85rem">Una tarde de comida o postre preparado por mí.</p>
+          </div>
+          <button class="claim-btn" onclick="claimCoupon('Preparar tu Postre')">Canjear</button>
+        </div>
+        <div class="coupon">
+          <div class="coupon-desc">
+            <h4>Extrañamiento masivo🎉</h4>
+            <p style="font-size:0.85rem">Voy a visitarte el dia y a la hora que sea, siempre que no me golpeen :3.</p>
+          </div>
+          <button class="claim-btn" onclick="claimCoupon('Salida de Rescate')">Canjear</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- P3: Amor-metro -->
+  <div class="modal" id="modal3">
+    <div class="modal-content">
+      <span class="close-btn" onclick="closeModal('modal3')">&times;</span>
+      <h3 style="color: var(--primary); margin-bottom: 12px;">El Amor-metro 💖</h3>
+      <p style="font-weight: bold; margin-bottom: 10px;">¿Cuánto ama cada quien?</p>
+      <div style="padding: 10px;">
+        <button class="calc-btn" onclick="calculateLove()">¡Calcular Amor! ✨</button>
+        <div class="calc-result" id="love-result">Toca el botón para medir el nivel de hoy...</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- P4: Ruleta -->
+  <div class="modal" id="modal4">
+    <div class="modal-content">
+      <span class="close-btn" onclick="closeModal('modal4')">&times;</span>
+      <h3 style="color: var(--secondary); margin-bottom: 20px;">¿Qué Hacemos Hoy? 🎡</h3>
+      <div class="wheel-container">
+        <div class="roulette-box" id="wheel">Ruleta de planes</div>
+        <button class="calc-btn" style="background:var(--secondary);" onclick="spinWheel()">¡Girar ruleta! 🎲</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- P5: Momentos -->
+  <div class="modal" id="modal5">
+    <div class="modal-content">
+      <span class="close-btn" onclick="closeModal('modal5')">&times;</span>
+      <h3 style="color: var(--primary); margin-bottom: 15px;">Momentos Inolvidables 📸</h3>
+      <p style="font-size: 0.95rem; margin-bottom: 15px;">Seis meses llenos de recuerdos bonitos.</p>
+      
+      <div class="polaroid">
+        <img src="foto.jpg" alt="Foto juntos">
+        <p>El inicio de todo ❤️</p>
+      </div>
+      <div class="polaroid" style="transform: rotate(3deg);">
+        <img src="foto1.jpg" alt="Foto juntos">
+        <p>TE AMOOOO</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- P6: Checklist planes emi x naty -->
+  <div class="modal" id="modal6">
+    <div class="modal-content">
+      <span class="close-btn" onclick="closeModal('modal6')">&times;</span>
+      <h3 style="color: var(--primary); margin-bottom: 8px;">planes emi x naty 😎</h3>
+      <p style="font-size:0.9rem; margin-bottom: 15px; font-weight:bold; color:var(--secondary)">Para que no se nos olvide :3</p>
+      
+      <div class="checklist" id="plan-list"></div>
+    </div>
+  </div>
+
+  <script>
+    // 1. Contador con fecha de inicio: 9 de abril de 2026
+    const startDate = new Date('2026-04-09T00:00:00'); 
+    
+    function updateCounter() {
+      const now = new Date();
+      const diff = now - startDate;
+      
+      if (diff < 0) {
+        document.getElementById('time-counter').innerHTML = "¡Casi es 9 de abril!";
+        return;
+      }
+
+      const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
+      const mins = Math.floor((diff / (1000 * 60)) % 60);
+      const secs = Math.floor((diff / 1000) % 60);
+      
+      document.getElementById('time-counter').innerHTML = 
+        `Llevamos juntos: ${days} días, ${hours} h, ${mins} m, ${secs} s`;
+    }
+    updateCounter();
+    setInterval(updateCounter, 1000);
+
+    // Corazones flotantes
+    const bg = document.getElementById('hearts-bg');
+    for (let i = 0; i < 15; i++) {
+      const h = document.createElement('div');
+      h.className = 'heart-particle fa-solid fa-heart';
+      h.style.left = `${Math.random() * 100}vw`;
+      h.style.animationDelay = `${Math.random() * 5}s`;
+      h.style.fontSize = `${Math.random() * 15 + 10}px`;
+      bg.appendChild(h);
+    }
+
+    // Modales
+    function openModal(id) {
+      document.getElementById(id).style.display = 'flex';
+      confetti({ particleCount: 35, spread: 50 });
+    }
+
+    function closeModal(id) {
+      document.getElementById(id).style.display = 'none';
+    }
+
+    // Puerta 1: Música
+    const music = document.getElementById('bg-music');
+    const playIcon = document.getElementById('play-icon');
+    function togglePlay() {
+      if (music.paused) {
+        music.play();
+        playIcon.className = 'fa-solid fa-pause';
+      } else {
+        music.pause();
+        playIcon.className = 'fa-solid fa-play';
+      }
+    }
+
+    // Puerta 2: Cupones
+    function claimCoupon(title) {
+      confetti({ particleCount: 60, spread: 60 });
+      alert(`¡Cupón de "${title}" canjeado con éxito! Tómale captura y mándamelo por WhatsApp 🎟️❤️`);
+    }
+
+    // Puerta 3: Amor-metro (Emi siempre ama al infinito, Naty al azar)
+    function calculateLove() {
+      const resBox = document.getElementById('love-result');
+      resBox.style.opacity = '0';
+      
+      setTimeout(() => {
+        const numNaty = Math.floor(Math.random() * 900000) + 100000;
+        
+        const mensajes = [
+          `Naty ama a Emi un ${numNaty.toLocaleString()}% ❤️<br>Pero <strong>Emi ama a Naty ∞% (infinito)</strong>`,
+          `Naty: ${numNaty.toLocaleString()}% 💕<br><strong>Emi: ∞%</strong>`,
+          `Naty hoy anda enamorada al ${numNaty.toLocaleString()}% 🔥<br>Pero el amor de <strong>Emi es ∞%</strong>.`
+        ];
+        
+        const randomMsg = mensajes[Math.floor(Math.random() * mensajes.length)];
+        resBox.innerHTML = randomMsg;
+        resBox.style.opacity = '1';
+        confetti({ particleCount: 80, spread: 70 });
+      }, 250);
+    }
+
+    // Puerta 4: Ruleta
+    const citas = [
+      "Tardecita de picnic 🧺",
+      "Peli con comida rica 🍿",
+      "Pintar alcancías juntos 🎨",
+      "Paseo por Chapultepec 🌳",
+      "Pintar en acuarelas 🖌️",
+      "Comer Tacos de Carnitas 🌮",
+      "Tarde de juegos de mesa 🎲",
+      "Noche de karaoke 🎤",
+      "Comer pollo rostizado juntos",
+    ];
+
+    function spinWheel() {
+      const wheel = document.getElementById('wheel');
+      wheel.style.transform = 'rotate(720deg)';
+      setTimeout(() => {
+        const randomCita = citas[Math.floor(Math.random() * citas.length)];
+        wheel.innerHTML = randomCita;
+        wheel.style.transform = 'rotate(0deg)';
+        confetti({ particleCount: 50, spread: 50 });
+      }, 1200);
+    }
+
+    // Puerta 6: Tu lista de planes emi x naty
+    const planes = [
+      { t: "picnic 🧺", c: true },
+      { t: "ver pelis (cuevana) 🍿", c: true },
+      { t: "pintar alcancias 🐷", c: false },
+      { t: "chapultepec 🌳", c: false },
+      { t: "pintar en acuarelas 🎨", c: false },
+      { t: "jugar juegos de mesa 🎲", c: false },
+      { t: "cocinar juntos 🍳", c: true },
+      { t: "karaoke 🎤", c: true },
+      { t: "hacer slime 🧪", c: false },
+      { t: "jugar among us irl 🚀", c: true },
+      { t: "jugar squid game irl 🦑", c: false },
+      { t: "casa de jengibre with 🏠", c: true },
+      { t: "adquirir ropa navidad twins 👕🧣", c: true },
+      { t: "comer tacos de carnitas en la prepa 🌮", c: true },
+      { t: "enseñar a jugar canicas 🔮", c: false },
+      { t: "comer pollo rostizado 😎🍗", c: true },
+      { t: "juegos de mesa 🧩", c: false },
+      { t: "teatro 🎭", c: false },
+      { t: "cine en carro 🚗🎬", c: false },
+      { t: "peli con banda sonora en vivo 🎻🍿", c: false },
+      { t: "jugar minecraft 🕹️🎮", c: true },
+      { t: "colorear la mitad de un dibujo juntes 🖍️", c: false },
+      { t: "comer flan 🍮", c: true },
+      { t: "cocinar 👨‍🍳👩‍🍳", c: true },
+      { t: "ir a museo anahuacalli 🏛️", c: false },
+      { t: "ir a comer tacos en la noche 😝🌮", c: false },
+      { t: "abrazarnos durante 20 min sin soltarnos 🫂", c: true },
+      { t: "pintar cuadros e intercambiar cada 10 minutos 🎨🔄", c: true },
+      { t: "ir a una clase de baile 💃🕺", c: false },
+      { t: "ir a una obra de teatro 🎟️🎭", c: false }
+    ];
+
+    const listEl = document.getElementById('plan-list');
+    
+    function renderPlanes() {
+      listEl.innerHTML = '';
+      planes.forEach((plan, i) => {
+        const item = document.createElement('div');
+        item.className = `task-item ${plan.c ? 'checked' : ''}`;
+        item.innerHTML = `
+          <input type="checkbox" id="task-${i}" ${plan.c ? 'checked' : ''} onchange="toggleTask(${i})">
+          <label for="task-${i}">${plan.t}</label>
+        `;
+        listEl.appendChild(item);
+      });
+    }
+
+    function toggleTask(i) {
+      planes[i].c = !planes[i].c;
+      renderPlanes();
+      if (planes[i].c) {
+        confetti({ particleCount: 30, spread: 40 });
+      }
+    }
+
+    renderPlanes();
+  </script>
+</body>
+</html>
